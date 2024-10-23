@@ -2,7 +2,7 @@ import streamlit as st
 import asyncio
 # import os
 # import getpass
-import time
+# import time
 from chatbot_helper import send_chatbot_request
 from llama_index.core.llms import ChatMessage
 # from pinecone import Pinecone
@@ -34,7 +34,7 @@ st.title("🤖 Welcome in :blue[_fam_ _property_] ChatBot :sunglasses:")
     
 def generate_llm(text):
     resp =  asyncio.run(send_chatbot_request(text,st.secrets["COHERE_API_KEY"]))
-    print(resp)   
+    print(resp) 
     
     # with st.chat_message("assistant"):
     #     st.write(resp)
@@ -76,7 +76,7 @@ else:
 
 
             
-    prompt = st.chat_input("What is up?")
+    prompt = st.chat_input("Ask a question?")
 
 
     # Display the existing chat messages via `st.chat_message`.
@@ -88,23 +88,23 @@ else:
 
 
 
-    print(len(st.session_state.messages))
-    if len(st.session_state.messages) > 1 or prompt:
+    # print(len(st.session_state.messages))
+    # if len(st.session_state.messages) > 1 or prompt:
         
-        with st.container(height=450):
+        # with st.container(height=450):
                         
-            if prompt:
-                
-                # with st.chat_message("user"):
-                #     st.markdown(prompt)
-                
-                st.session_state.messages.append(ChatMessage(role= "user", content=prompt))
-                generate_llm(prompt)
-            
-            for message in st.session_state.messages:
-                if message.role != "system":
-                    with st.chat_message(message.role):
-                        st.markdown(message.content)
+    if prompt:
+        
+        # with st.chat_message("user"):
+        #     st.markdown(prompt)
+        
+        st.session_state.messages.append(ChatMessage(role= "user", content=prompt))
+        generate_llm(prompt)
+    
+    for message in st.session_state.messages:
+        if message.role != "system":
+            with st.chat_message(message.role):
+                st.markdown(message.content)
 
 
     # if st.session_state.messages[-1].role == 'assistant' or len(st.session_state.messages) == 1:

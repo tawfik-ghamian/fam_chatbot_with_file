@@ -115,15 +115,15 @@ async def send_chatbot_request(question, cohere_api_key)-> str:
 
     # Making the POST request
     try:
-        response = requests.post(url, params=payload,timeout=26)
-        await asyncio.sleep(1)
+        response = requests.post(url, params=payload)
+        await asyncio.sleep(0.5)
         print("hello")
-        
+        print(response.text)
 
         # Check if the request was successful
         if response.status_code == 200:
                 # Parse the response JSON 
-                return response.text
+                return  response.text
         else:
             return f"Request failed with status code: {response.status_code}"
     
