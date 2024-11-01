@@ -6,5 +6,4 @@ streamlit
 llama-index
 oracledb
 pdfplumber
-docx
-exceptions
+python-docx
