@@ -47,7 +47,7 @@ def extract_pdf(file):
                             data.append( {
                                 "heading":current_heading,
                                 "paragraphs": " ".join(current_paragraph),
-                                "tables": current_tables
+                                "table": current_tables
                             })
                         current_paragraph = []
                         current_tables = []
@@ -63,7 +63,7 @@ def extract_pdf(file):
                 data.append ({
                     "heading":current_heading,
                     "paragraphs": " ".join(current_paragraph),
-                    "tables": current_tables
+                    "table": current_tables
                 })
                 current_paragraph = []
                 current_tables = []
