@@ -412,7 +412,7 @@ else:
             print("pdf file")
             res = extract_pdf(uploaded_file)
             # print(res)
-            # insert_paragraph_to_oracledb(res)
+            insert_paragraph_to_oracledb(res)
         elif uploaded_file.name.__contains__(".docx"):
              print("docx file")
              res = extract_paragraph_docx(uploaded_file)
