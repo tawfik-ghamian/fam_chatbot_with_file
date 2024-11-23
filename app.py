@@ -11,13 +11,30 @@ from docx.oxml.table import CT_Tbl
 from docx.text.paragraph import Paragraph
 from docx.oxml.text.paragraph import CT_P
 from llama_index.core.llms import ChatMessage
-from chatbot_helper import send_chatbot_request
+from chatbot_helper import upload_file,chat
 
 
 def generate_llm(text):
-    resp =  asyncio.run(send_chatbot_request(text,st.secrets["COHERE_API_KEY"])) 
+    print("text " ,text)
     
-    st.session_state.messages.append(ChatMessage(role= "assistant", content= resp))
+    msg = st.toast('Generating...')
+    resp =  asyncio.run(chat(text)) 
+    if resp.status_code == 200:
+        st.session_state.messages.append(ChatMessage(role= "user", content=text))
+        # Parse the response JSON 
+        st.session_state.messages.append(ChatMessage(role= "assistant", content= resp.json()["result"]["answer"]))
+        msg.empty()
+    else:
+        msg.toast(resp.json()["message"])
+    print("resp_llm ",resp)
+    
+def upload_file_api(file):
+    
+    msg = st.toast('Uploading file...')
+    resp =  asyncio.run(upload_file(file)) 
+    print("resp ", resp)
+    msg.toast(resp)
+
 
 def extract_pdf(file):
     """Extracts paragraphs, headings, and tables from a PDF file and returns a list of dictionaries.
@@ -380,8 +397,6 @@ def insert_paragraph_to_oracledb(contents):
     connection.close()
     st.sidebar.success("The file uploaded successfully!")
 
-
-
 st.title("🤖 Welcome in :blue[_fam_ _property_] ChatBot :sunglasses:")
 
 @st.dialog("Sign Up")
@@ -400,51 +415,58 @@ if "messages" not in st.session_state:
     st.session_state.messages = [
         ChatMessage(role="system", content="You are a real state assistant that helps users find best properties in Dubai that fit there requirement")
 ]        
-
+prompt = st.chat_input("Ask a question?")
 if len(st.session_state.messages) == 7:
     st.write("please sign in to fam property to complete conversation")
     st.button('Sign In',on_click=email_form)
         
 else:
-    uploaded_file = st.sidebar.file_uploader("Upload a file", type=["txt","docx","pdf"])
-    if uploaded_file is not None:
-        if uploaded_file.name.__contains__(".pdf"):
-            print("pdf file")
-            res = extract_pdf(uploaded_file)
-            # print(res)
-            insert_paragraph_to_oracledb(res)
-        elif uploaded_file.name.__contains__(".docx"):
-             print("docx file")
-             res = extract_paragraph_docx(uploaded_file)
-            #  print(res)
-             insert_paragraph_to_oracledb(res)
-        elif uploaded_file.name.__contains__(".txt"):
-            data = []
-            file_content = uploaded_file.read().decode("utf-8")
-            paragraphs = file_content.split('\n\n')
-            for p in paragraphs:
-                data.append({
-                        "heading": "",
-                        "paragraphs": [p],
-                        "tables": []
-                    })
-            
-            result = {
-                "file_name":uploaded_file.name,
-                "data":data
-            }
+    
+    uploaded_file = st.sidebar.file_uploader("Upload a file", type=["docx","pdf"])
+    
+    if uploaded_file is not None and prompt is None:
+        # print(type(uploaded_file))
+        upload_file_api(file=uploaded_file)
+        uploaded_file.close()
         
-        print(uploaded_file._file_urls.upload_url)
-        print(uploaded_file.name)
+        # if uploaded_file.name.__contains__(".pdf"):
+        #     print("pdf file")
+        #     res = extract_pdf(uploaded_file)
+        #     # print(res)
+        #     insert_paragraph_to_oracledb(res)
+        # elif uploaded_file.name.__contains__(".docx"):
+        #      print("docx file")
+        #      res = extract_paragraph_docx(uploaded_file)
+        #     #  print(res)
+        #      insert_paragraph_to_oracledb(res)
+        # elif uploaded_file.name.__contains__(".txt"):
+        #     data = []
+        #     file_content = uploaded_file.read().decode("utf-8")
+        #     paragraphs = file_content.split('\n\n')
+        #     for p in paragraphs:
+        #         data.append({
+        #                 "heading": "",
+        #                 "paragraphs": [p],
+        #                 "tables": []
+        #             })
             
-        prompt = st.chat_input("Ask a question?")
-                        
-        if prompt:
-            
-            st.session_state.messages.append(ChatMessage(role= "user", content=prompt))
-            generate_llm(prompt)
+        #     result = {
+        #         "file_name":uploaded_file.name,
+        #         "data":data
+        #     }
+    
         
-        for message in st.session_state.messages:
-            if message.role != "system":
-                with st.chat_message(message.role):
-                    st.markdown(message.content)
+    # print(uploaded_file._file_urls.upload_url)
+    # print(uploaded_file.name)
+    
+    if prompt:
+        generate_llm(prompt)
+        
+    for message in st.session_state.messages:
+        if message.role != "system":
+            with st.chat_message(message.role):
+                st.markdown(message.content)
+            
+    
+                    
+    

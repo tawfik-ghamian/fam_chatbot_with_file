@@ -103,27 +103,56 @@ import asyncio
 
 
 
-async def send_chatbot_request(question, cohere_api_key)-> str:
+# async def send_chatbot_request(question, cohere_api_key)-> str:
+#     # The URL endpoint
+#     url = "http://91.75.21.131:9080/ords/ai/chatbot/chat_with_file"
+
+#     # The payload to be sent with the POST request
+#     payload = {
+#         'question': question,
+#         'cohere_api_key': cohere_api_key
+#     }
+
+#     # Making the POST request
+#     try:
+#         response = requests.post(url, params=payload)
+#         await asyncio.sleep(0.5)
+#         print("hello")
+#         print(response.text)
+
+#         # Check if the request was successful
+#         if response.status_code == 200:
+#                 # Parse the response JSON 
+#                 return  response.text
+#         else:
+#             return f"Request failed with status code: {response.status_code}"
+    
+#     except ValueError:
+#         return "Error: Unable to parse JSON response."
+#     except requests.Timeout:
+#         print("The request timed out. Please try again.")
+#     except requests.RequestException as e:
+#         print(f"An error occurred: {e}")
+    
+async def upload_file(file)-> str:
     # The URL endpoint
-    url = "http://91.75.21.131:9080/ords/ai/chatbot/chat_with_file"
+    url = "http://91.75.21.130:3003/test/upload_file"
 
     # The payload to be sent with the POST request
-    payload = {
-        'question': question,
-        'cohere_api_key': cohere_api_key
+    print(file)
+    files = {
+        'file': file
     }
-
     # Making the POST request
     try:
-        response = requests.post(url, params=payload)
-        await asyncio.sleep(0.5)
+        response = requests.post(url,files=files)
         print("hello")
         print(response.text)
 
         # Check if the request was successful
         if response.status_code == 200:
                 # Parse the response JSON 
-                return  response.text
+                return  response.json()["message"]
         else:
             return f"Request failed with status code: {response.status_code}"
     
@@ -133,4 +162,29 @@ async def send_chatbot_request(question, cohere_api_key)-> str:
         print("The request timed out. Please try again.")
     except requests.RequestException as e:
         print(f"An error occurred: {e}")
+
+async def chat(question):
+    # The URL endpoint
+    url = "http://91.75.21.130:3003/test/chat"
+
+    # The payload to be sent with the POST request
+    payload = {
+        'query': question
+    }
+
+    # Making the POST request
+    try:
+        response = requests.post(url,data=payload)
+        print("hello")
+        print(response.text)
+
+        # Check if the request was successful
+        return response
     
+    except ValueError:
+        return "Error: Unable to parse JSON response."
+    except requests.Timeout:
+        print("The request timed out. Please try again.")
+    except requests.RequestException as e:
+        print(f"An error occurred: {e}")
+  
