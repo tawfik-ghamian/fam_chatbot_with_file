@@ -133,21 +133,25 @@ import asyncio
 #         print("The request timed out. Please try again.")
 #     except requests.RequestException as e:
 #         print(f"An error occurred: {e}")
+
+# dev_url = "http://172.22.208.99:3003"
+dev_url = "http://localhost:3003"
+prod_url = "http://91.75.21.130:3003"
     
 async def upload_file(file)-> str:
     # The URL endpoint
-    url = "http://91.75.21.130:3003/test/upload_file"
+    url = f"{dev_url}/chatbot/upload_file"
 
     # The payload to be sent with the POST request
-    print(file)
+    # print(file)
     files = {
         'file': file
     }
     # Making the POST request
     try:
         response = requests.post(url,files=files)
-        print("hello")
-        print(response.text)
+        # print("hello")
+        # print(response.text)
 
         # Check if the request was successful
         if response.status_code == 200:
@@ -160,26 +164,49 @@ async def upload_file(file)-> str:
         return "Error: Unable to parse JSON response."
     except requests.Timeout:
         print("The request timed out. Please try again.")
+        return "The request timed out. Please try again."
     except requests.RequestException as e:
         print(f"An error occurred: {e}")
 
 async def chat(question):
     # The URL endpoint
-    url = "http://91.75.21.130:3003/test/chat"
+    url = f"{dev_url}/chatbot/chat"
 
     # The payload to be sent with the POST request
-    payload = {
+    payload = { 
         'query': question
     }
 
     # Making the POST request
     try:
         response = requests.post(url,data=payload)
-        print("hello")
-        print(response.text)
+        # print("hello")
+        # print(response.text)
 
         # Check if the request was successful
         return response
+    
+    except ValueError:
+        return "Error: Unable to parse JSON response."
+    except requests.Timeout:
+        print("The request timed out. Please try again.")
+        return "The request timed out. Please try again."
+    except requests.RequestException as e:
+        print(f"An error occurred: {e}")
+
+
+async def question_suggestion():
+    # The URL endpoint
+    url = f"{dev_url}/chatbot/question_suggestion"
+    
+    # Making the POST request
+    try:
+        response = requests.get(url)
+        # print("hello")
+        # print(response.json())
+
+        # Check if the request was successful
+        return response.json()
     
     except ValueError:
         return "Error: Unable to parse JSON response."
