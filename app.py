@@ -37,7 +37,7 @@ st.markdown(
     """, unsafe_allow_html=True
 )
     
-st.title("🤖 Welcome in :blue[_fam_ _property_] ChatBot ")
+st.title("🤖 Welcome to :blue[_Document_] ChatBot ")
 
 if "messages" not in st.session_state:
     st.session_state.messages = [
